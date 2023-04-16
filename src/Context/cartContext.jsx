@@ -73,7 +73,8 @@ export const CartProvider = ({children}) => {
                 setItems(response.data.products.map((prods) => {
                     return {
                         ...prods,
-                        isDisabled: false
+                        isDisabled: false,
+                        isWishlistDisabled: false,
                       };
                 }));
                 
@@ -92,9 +93,8 @@ export const CartProvider = ({children}) => {
     
     const addToCartBtn = (item) => {
        
-          console.log(items)
-          console.log(item.id)
-          const print = items.map((obj) => {
+          
+          const updateIsDisabled = items.map((obj) => {
             if(obj.id === item.id){
                 return {...obj, isDisabled: true};
             }
@@ -102,13 +102,13 @@ export const CartProvider = ({children}) => {
                 return obj;
             }
           });
-          console.log(print);
-          setItems(print)
+          
+          setItems(updateIsDisabled)
 
         
 
       setCart(() => [...cart,item]);
-      console.log(cart)
+      
     }
 
 
@@ -117,19 +117,62 @@ export const CartProvider = ({children}) => {
 
 
     const removeFrmCart = (itemId) => {
+
+
+      const updateIsDisabled = items.map((obj) => {
+        if(obj.id === itemId){
+            return {...obj, isDisabled: false};
+        }
+        else{
+            return obj;
+        }
+      });
+
+      setItems(updateIsDisabled)
+
+
         const filteredItems = cart.filter(item => item.id !== itemId);
         setCart(filteredItems);
       };
 
     const addToWishListBtn = (item) => {
-        setWishList((wishList) => [...wishList, item]);
-        console.log("After Adding to wishlist");
-        console.log(wishList)
-    }
+      const updateIsDisabled = items.map((obj) => {
+        if(obj.id === item.id){
+            return {...obj, isWishlistDisabled: true};
+        }
+        else{
+            return obj;
+        }
+      });
+      
+      setItems(updateIsDisabled)
+
     
 
+  setWishList(() => [...wishList,item]);
+    }
+    
+    const removefrmWishlist = (itemId) => {
+
+
+      const updateIsDisabled = items.map((obj) => {
+        if(obj.id === itemId){
+            return {...obj, isWishlistDisabled: false};
+        }
+        else{
+            return obj;
+        }
+      });
+
+      setItems(updateIsDisabled)
+
+
+        const filteredItems = wishList.filter(item => item.id !== itemId);
+        setWishList(filteredItems);
+      };
+
     return(
-        <CartContext.Provider value={{cart, addToCartBtn, addToWishListBtn, removeFrmCart,  items}}>
+        <CartContext.Provider value={{cart, wishList, addToCartBtn, addToWishListBtn, removeFrmCart, removefrmWishlist,  items}}>
             {children }
         </CartContext.Provider>
     )
